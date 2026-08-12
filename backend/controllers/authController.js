@@ -5,21 +5,54 @@ const jwt = require('jsonwebtoken');
 const RegisterUser = async (req, res) => {
     console.log("Register route hit!", req.body);
     try {
-        const { username, email, password } = req.body;
+        const {
+            name,
+            gender,
+            mob_no,
+            email,
+            password,
+            confirmPassword,
+            country_id,
+            state_id,
+            city_id
+        } = req.body;
 
-        const existingUser = await User.findByUsernameOrEmail(username, email);
+        if (!name || !gender || !mob_no || !email || !password || !confirmPassword || !country_id || !state_id || !city_id) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Password and Confirm Password do not match"
+            });
+        }
+
+        const existingUser = await User.findByEmailOrMobile(email, mob_no);
 
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: "Same Username or email exist,Try something new!"
+                message: "Email or Mobile Number already registered, Try something new!"
             });
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const newUserId = await User.create({ username, email, password: hashPassword });
+        const newUserId = await User.create({
+            name,
+            password: hashPassword,
+            email,
+            gender,
+            country_id,
+            state_id,
+            city_id,
+            mob_no
+        });
 
         if (newUserId) {
             res.status(201).json({
@@ -44,14 +77,14 @@ const RegisterUser = async (req, res) => {
 
 const LoginUser = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        const user = await User.findByUsername(username);
+        const user = await User.findByEmail(email);
 
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid Username,please try again"
+                message: "Invalid Email,please try again"
             });
         }
 
@@ -65,8 +98,8 @@ const LoginUser = async (req, res) => {
         }
 
         const accessToken = jwt.sign({
-            userId: user.id,
-            username: user.username,
+            userId: user.user_id,
+            name: user.name,
             role: user.role
         }, process.env.JWT_SECRET_KEY, { expiresIn: '30m' });
 
