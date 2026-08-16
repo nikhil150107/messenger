@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, MessageSquare, ArrowRight } from 'lucide-react';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 
 export default function Login() {
+  const navigate = useNavigate();
   // Form State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,18 +63,8 @@ export default function Login() {
 
     setTimeout(() => {
       setIsLoading(false);
-
-      // 3. Show Success Alert Notification
-      setAlertConfig({
-        isOpen: true,
-        title: 'Login Successful',
-        message: `Welcome back! You have successfully logged in as ${email.trim()}.`,
-        type: 'success',
-        primaryText: 'Close',
-        onPrimaryAction: () => {
-          setAlertConfig((prev) => ({ ...prev, isOpen: false }));
-        }
-      });
+      localStorage.setItem('isLoggedIn', 'true');
+      navigate('/home');
     }, 700);
   };
 

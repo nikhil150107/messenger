@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Signup from '../pages/Signup';
 import VerifyOTP from '../pages/VerifyOTP';
 import Login from '../pages/Login';
+import Home from '../pages/Home';
 
 const AppRoutes = () => {
   return (
@@ -11,6 +12,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/home" element={<Home />} />
       <Route path="*" element={<Navigate to="/signup" replace />} />
     </Routes>
   );

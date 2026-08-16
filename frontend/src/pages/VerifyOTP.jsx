@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, AlertCircle, ArrowLeft, RefreshCw, CheckCircle2 } from 'lucide-react';
 import OTPInput from '../components/OTPInput';
 import Button from '../components/Button';
@@ -7,20 +7,21 @@ import { authAPI } from '../services/api';
 
 const VerifyOTP = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Extract state if available, otherwise use mock
-  const rawMobile = location.state?.mobileNumber || '+919876543210';
+  const rawEmail = location.state?.email || 'user@example.com';
   const userId = location.state?.userId || '';
   
-  // Mask the mobile number (e.g., +91 ******3210)
-  const maskMobile = (number) => {
-    if (!number || number.length < 5) return number;
-    const last4 = number.slice(-4);
-    const prefix = number.slice(0, number.length - 10) || number.slice(0, 3); // grab country code roughly
-    return `${prefix} ******${last4}`;
+  // Mask the email address
+  const maskEmail = (emailStr) => {
+    if (!emailStr || !emailStr.includes('@')) return emailStr;
+    const [name, domain] = emailStr.split('@');
+    if (name.length <= 2) return `${name}***@${domain}`;
+    return `${name.slice(0, 2)}***${name.slice(-1)}@${domain}`;
   };
 
-  const maskedNumber = maskMobile(rawMobile);
+  const maskedIdentifier = maskEmail(rawEmail);
 
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -136,10 +137,13 @@ const VerifyOTP = () => {
               <CheckCircle2 size={32} className="text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Complete</h2>
-            <p className="text-gray-500 mb-8">Mobile number verified successfully.</p>
+            <p className="text-gray-500 mb-8">Email address verified successfully.</p>
             
-            <Button onClick={() => alert('Future navigation to Messenger')} fullWidth>
-              Continue to Messenger
+            <Button onClick={() => {
+              localStorage.removeItem('isLoggedIn');
+              navigate('/home');
+            }} fullWidth>
+              Continue to Home
             </Button>
           </div>
         </div>
@@ -160,12 +164,12 @@ const VerifyOTP = () => {
 
         <div className="bg-white py-8 px-4 shadow-xl shadow-gray-200/50 sm:rounded-2xl sm:px-10 border border-gray-100">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Verify Your Mobile Number</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Verify Your Email Address</h2>
             <p className="text-gray-500 text-sm">
-              We have sent a 6-digit OTP to your mobile number.
+              We have sent a 6-digit OTP to your email address.
             </p>
             <div className="mt-2 font-medium text-gray-800 bg-gray-50 py-2 px-4 rounded-lg inline-block">
-              {maskedNumber}
+              {maskedIdentifier}
             </div>
           </div>
 

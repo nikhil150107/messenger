@@ -212,7 +212,7 @@ const Signup = () => {
       const response = await authAPI.registerUser(payload);
       
       if (response.success || response.userId) {
-        navigate('/verify-otp', { state: { userId: response.userId || response.data?.userId } });
+        navigate('/verify-otp', { state: { userId: response.userId || response.data?.userId, email: formData.email } });
       } else {
         setApiError(response.message || 'Registration failed. Please try again.');
       }
