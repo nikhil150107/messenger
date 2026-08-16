@@ -1,0 +1,11 @@
+{
+  "name": "nikhil-test",
+  "gender": "male",
+  "mob_no": "+919168150107",
+  "email": "nikhil-test@example.com",
+  "password": "Nik@150107",
+  "confirmPassword": "Nik@150107",
+  "country_id": "India",
+  "state_id": "Maharashtra",
+  "city_id": "Pune"
+}
