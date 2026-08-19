@@ -1,58 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, User, LogOut, Send, Quote, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, User, LogOut, Send, Quote } from 'lucide-react';
 import Button from '../components/Button';
-import PhoneInput from '../components/PhoneInput';
+import { useAuth } from '../context/AuthContext';
+
+const quote = {
+  text: "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+  author: "Nelson Mandela"
+};
 
 export default function Home() {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
   const [mobile, setMobile] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
-  // Daily Quote
-  const quote = {
-    text: "The greatest glory in living lies not in never falling, but in rising every time we fall.",
-    author: "Nelson Mandela"
-  };
-
-  useEffect(() => {
-    // Check login status on mount
-    const loggedInStatus = localStorage.getItem('isLoggedIn');
-    if (loggedInStatus === 'true') {
-      setIsLoggedIn(true);
-    }
-  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsLoggedIn(false);
+    logout();
+    navigate('/login', { replace: true });
   };
 
   const handleSendQuote = (e) => {
     e.preventDefault();
-    if (!mobile || mobile.length < 7) return;
-
-    setIsLoading(true);
-    setSuccessMessage('');
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setSuccessMessage('Quote sent successfully via WhatsApp!');
-      setMobile('');
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 5000);
-    }, 1500);
+    if (!mobile || mobile.replace(/\D/g, '').length < 7) return;
+    const text = encodeURIComponent(`"${quote.text}"\n\n— ${quote.author}`);
+    const number = mobile.replace(/\D/g, '');
+    window.open(`https://wa.me/${number}?text=${text}`, '_blank');
   };
 
   return (
-    <div className="min-h-screen bg-sky-50 flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-800">
-      {/* Header / Navbar */}
+    <div className="min-h-screen bg-sky-50 flex flex-col text-slate-800">
       <header className="bg-white border-b border-sky-100 shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -63,7 +39,7 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-sky-50 text-sky-700 rounded-full border border-sky-100 font-medium text-sm">
                   <User size={16} />
@@ -88,12 +64,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-grow flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-sky-100 overflow-hidden relative">
-          {/* Top Decorative Banner */}
           <div className="h-2 w-full bg-sky-400" />
-          
+
           <div className="p-8 sm:p-10">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-sky-50 rounded-2xl text-sky-500 mb-4">
@@ -103,7 +77,6 @@ export default function Home() {
               <p className="text-slate-500 text-sm mt-1">Share some inspiration with friends.</p>
             </div>
 
-            {/* The Quote Card */}
             <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 mb-8 relative">
               <Quote size={40} className="absolute top-4 left-4 text-slate-200/50 -z-0" />
               <p className="text-lg font-medium text-slate-700 italic relative z-10 leading-relaxed text-center">
@@ -114,33 +87,29 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Success Message Alert */}
-            {successMessage && (
-              <div className="mb-6 p-4 bg-green-50 text-green-700 text-sm font-medium rounded-xl border border-green-100 flex items-center gap-2 animate-fadeIn">
-                <CheckCircle2 size={18} className="text-green-500 flex-shrink-0" />
-                <span>{successMessage}</span>
-              </div>
-            )}
-
-            {/* Send Quote Form */}
             <form onSubmit={handleSendQuote} className="space-y-4">
-              <PhoneInput
-                id="mobile"
-                label="Send via WhatsApp"
-                placeholder="Enter friend's WhatsApp number"
-                countryCallingCode=""
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-              />
-              
+              <div className="w-full">
+                <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Send via WhatsApp
+                </label>
+                <input
+                  id="mobile"
+                  type="tel"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                  placeholder="Enter friend's WhatsApp number (with country code)"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all"
+                />
+              </div>
+
               <div className="pt-2">
-                <Button 
-                  type="submit" 
-                  disabled={isLoading || !mobile} 
-                  fullWidth 
+                <Button
+                  type="submit"
+                  disabled={!mobile || mobile.replace(/\D/g, '').length < 7}
+                  fullWidth
                   icon={<Send size={16} />}
                 >
-                  {isLoading ? 'Sending...' : 'Send via WhatsApp'}
+                  Send via WhatsApp
                 </Button>
               </div>
             </form>

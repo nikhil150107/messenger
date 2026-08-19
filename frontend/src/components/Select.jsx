@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertCircle, ChevronDown } from 'lucide-react';
 
-const Select = ({ label, id, error, options, icon: Icon, ...props }) => {
+const Select = ({ label, id, error, options, value, icon: Icon, ...props }) => {
   return (
     <div className="w-full">
       {label && (
@@ -17,6 +17,7 @@ const Select = ({ label, id, error, options, icon: Icon, ...props }) => {
         )}
         <select
           id={id}
+          value={value}
           className={`w-full px-4 py-2.5 bg-gray-50 border rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all ${
             Icon ? 'pl-10' : ''
           } ${

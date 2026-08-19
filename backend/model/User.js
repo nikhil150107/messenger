@@ -1,7 +1,7 @@
 const pool = require('../config/db');
 
 const User = {
-    // find by email OR mobile (for register check)
+
     findByEmailOrMobile: async (email, mob_no) => {
         const [rows] = await pool.query(
             'SELECT * FROM user WHERE email = ? OR mob_no = ?',
@@ -10,44 +10,45 @@ const User = {
         return rows[0];
     },
 
-    // find by email (for login) - joined with country/state/city names
     findByEmail: async (email) => {
         const [rows] = await pool.query(
-            `SELECT u.*, c.country_name, s.state_name, ci.city_name
-             FROM user u
-             JOIN country c ON u.country_id = c.country_id
-             JOIN state s ON u.state_id = s.state_id
-             JOIN city ci ON u.city_id = ci.city_id
-             WHERE u.email = ?`,
+            'SELECT * FROM user WHERE email = ?',
             [email]
         );
         return rows[0];
     },
 
-    // find by id
     findById: async (id) => {
         const [rows] = await pool.query(
-            `SELECT u.user_id, u.name, u.email, u.gender, u.mob_no,
-                    c.country_name, s.state_name, ci.city_name,
-                    u.created_date, u.update_date
-             FROM user u
-             JOIN country c ON u.country_id = c.country_id
-             JOIN state s ON u.state_id = s.state_id
-             JOIN city ci ON u.city_id = ci.city_id
-             WHERE u.user_id = ?`,
+            'SELECT * FROM user WHERE user_id = ?',
             [id]
         );
         return rows[0];
     },
 
-    // create new user
-    create: async ({ name, password, email, gender, country_id, state_id, city_id, mob_no }) => {
+    create: async ({ name, password, email, gender, country_name, state_name, city_name, mob_no, otp, otp_expiry }) => {
         const [result] = await pool.query(
-            `INSERT INTO user (name, password, email, gender, country_id, state_id, city_id, mob_no)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [name, password, email, gender, country_id, state_id, city_id, mob_no]
+            `INSERT INTO user (name, password, email, gender, country_name, state_name, city_name, mob_no, otp, otp_expiry, is_verified)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false)`,
+            [name, password, email, gender, country_name, state_name, city_name, mob_no, otp, otp_expiry]
         );
         return result.insertId;
+    },
+
+    updateOtp: async (email, otp, otp_expiry) => {
+        const [result] = await pool.query(
+            'UPDATE user SET otp = ?, otp_expiry = ? WHERE email = ?',
+            [otp, otp_expiry, email]
+        );
+        return result;
+    },
+
+    markVerified: async (email) => {
+        const [result] = await pool.query(
+            'UPDATE user SET is_verified = true, otp = NULL, otp_expiry = NULL WHERE email = ?',
+            [email]
+        );
+        return result;
     }
 };
 

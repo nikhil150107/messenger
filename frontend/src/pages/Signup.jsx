@@ -60,7 +60,7 @@ const Signup = () => {
       case 'password':
         if (!value) return "Password can't be blank.";
         return !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(value)
-          ? 'Must contain 8+ chars, 1 uppercase, 1 number, 1 special char.' : '';
+          ? 'Min 8 chars, 1 uppercase, 1 number, 1 special character.' : '';
       case 'confirmPassword':
         return (!value || value !== currentFormData.password) ? 'Passwords do not match.' : '';
       case 'country': return !value ? 'Please select a country.' : '';
@@ -144,118 +144,121 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white md:bg-gray-50 flex">
-      {/* Desktop Left Panel */}
-      <div className="hidden md:flex md:w-1/2 lg:w-5/12 bg-blue-600 text-white flex-col justify-between p-12 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <svg className="absolute w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path d="M0,100 C30,70 70,30 100,0 L100,100 Z" fill="currentColor" />
-          </svg>
-        </div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-              <MessageSquare className="text-blue-600" size={24} />
-            </div>
-            <span className="text-2xl font-bold tracking-tight">Messenger</span>
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+
+      {/* Top bar */}
+      <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center">
+            <MessageSquare className="text-white" size={17} />
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">Connect with friends globally.</h1>
-          <p className="text-blue-100 text-lg max-w-md">Join thousands of users on Messenger. Experience seamless, secure, and fast communication from anywhere in the world.</p>
+          <span className="text-lg font-bold text-slate-900 tracking-tight">Messenger</span>
         </div>
-        <div className="relative z-10">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-4">
-                {[1, 2, 3].map(i => (
-                  <img key={i} className="w-12 h-12 rounded-full border-2 border-blue-600 object-cover"
-                    src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="User" />
-                ))}
-              </div>
-              <div>
-                <p className="font-medium text-white">Join our community</p>
-                <p className="text-blue-200 text-sm">Over 10M+ active users</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p className="text-sm text-slate-500">
+          Already have an account?{' '}
+          <Link to="/login" className="text-sky-600 font-semibold hover:underline underline-offset-4">Sign in</Link>
+        </p>
       </div>
 
-      {/* Right Form Panel */}
-      <div className="w-full md:w-1/2 lg:w-7/12 flex flex-col px-6 py-6 md:px-10 lg:px-16 h-screen overflow-y-auto">
-        <div className="max-w-xl w-full mx-auto">
-          <div className="flex items-center gap-3 mb-8 md:hidden">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <MessageSquare className="text-white" size={18} />
-            </div>
-            <span className="text-xl font-bold text-gray-900 tracking-tight">Messenger</span>
+      {/* Form area */}
+      <div className="flex-1 flex items-start justify-center px-4 py-8 sm:py-12">
+        <div className="w-full max-w-2xl">
+
+          {/* Heading */}
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Create your account</h1>
+            <p className="text-slate-500 text-sm mt-2">Sign up to discover and share daily quotes</p>
           </div>
 
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Create an Account</h2>
-            <p className="text-gray-500 text-sm">Sign up to get started with Messenger</p>
-          </div>
+          {/* Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
-          {apiError && (
-            <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
-              <span className="font-medium">{apiError}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input id="fullName" label="Full Name" placeholder="Enter your full name" icon={User}
-                value={formData.fullName} onChange={handleChange} onBlur={handleBlur} error={errors.fullName} />
-              <Select id="gender" label="Gender" options={genderOptions} value={formData.gender}
-                onChange={handleChange} onBlur={handleBlur} icon={User} error={errors.gender} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <PhoneInput id="mobile" label="Mobile Number" placeholder="Enter your mobile number"
-                countryCallingCode={callingCode} value={formData.mobile}
-                onChange={handleChange} onBlur={handleBlur} error={errors.mobile} />
-              <Input id="email" type="email" label="Email" placeholder="Enter your email address" icon={Mail}
-                value={formData.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <PasswordInput id="password" label="Password" placeholder="Create password"
-                value={formData.password} onChange={handleChange} onBlur={handleBlur} error={errors.password} />
-              <PasswordInput id="confirmPassword" label="Confirm Password" placeholder="Confirm password"
-                value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} error={errors.confirmPassword} />
-            </div>
-
-            <div className="pt-3 border-t border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wider">Location Details</h3>
-              {locationError && <div className="mb-3 p-2 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100">{locationError}</div>}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <SearchableSelect id="country" label="Country"
-                  placeholder={isLoadingCountries ? 'Loading...' : 'Select Country'}
-                  options={countryOptions} value={formData.country}
-                  onChange={(val) => handleDropdownChange('country', val)}
-                  onBlur={handleBlur} disabled={isLoadingCountries} icon={Globe} error={errors.country} />
-                <SearchableSelect id="state" label="State"
-                  placeholder={isLoadingStates ? 'Loading...' : 'Select State'}
-                  options={stateOptions} value={formData.state}
-                  onChange={(val) => handleDropdownChange('state', val)}
-                  onBlur={handleBlur} disabled={!formData.country || isLoadingStates} icon={MapPin} error={errors.state} />
-                <SearchableSelect id="city" label="City"
-                  placeholder={isLoadingCities ? 'Loading...' : 'Select City'}
-                  options={cityOptions} value={formData.city}
-                  onChange={(val) => handleDropdownChange('city', val)}
-                  onBlur={handleBlur} disabled={!formData.state || isLoadingCities} icon={Building2} error={errors.city} />
+            {apiError && (
+              <div className="mx-6 mt-6 p-3.5 bg-red-50 text-red-700 text-sm rounded-xl border border-red-100 flex items-center gap-2">
+                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">{apiError}</span>
               </div>
-            </div>
+            )}
 
-            <div className="pt-2">
-              <Button type="submit" disabled={isLoading}>
+            <form onSubmit={handleSubmit} noValidate className="p-6 sm:p-8 space-y-6">
+
+              {/* Personal Info */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <User size={12} /> Personal Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input id="fullName" label="Full Name" placeholder="John Doe"
+                    leftIcon={<User size={15} className="text-slate-400" />}
+                    value={formData.fullName} onChange={handleChange} onBlur={handleBlur} error={errors.fullName} />
+                  <Select id="gender" label="Gender" options={genderOptions} value={formData.gender}
+                    onChange={handleChange} onBlur={handleBlur} icon={User} error={errors.gender} />
+                  <PhoneInput id="mobile" label="Mobile Number" placeholder="9876543210"
+                    countryCallingCode={callingCode} value={formData.mobile}
+                    onChange={handleChange} onBlur={handleBlur} error={errors.mobile} />
+                  <Input id="email" type="email" label="Email Address" placeholder="john@example.com"
+                    leftIcon={<Mail size={15} className="text-slate-400" />}
+                    value={formData.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} />
+                </div>
+              </div>
+
+              <hr className="border-slate-100" />
+
+              {/* Password */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+                  Password
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <PasswordInput id="password" label="Password" placeholder="Create a strong password"
+                    value={formData.password} onChange={handleChange} onBlur={handleBlur} error={errors.password} />
+                  <PasswordInput id="confirmPassword" label="Confirm Password" placeholder="Repeat your password"
+                    value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} error={errors.confirmPassword} />
+                </div>
+              </div>
+
+              <hr className="border-slate-100" />
+
+              {/* Location */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Globe size={12} /> Location
+                </h3>
+                {locationError && (
+                  <div className="mb-3 p-2.5 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100">{locationError}</div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <SearchableSelect id="country" label="Country"
+                    placeholder={isLoadingCountries ? 'Loading...' : 'Select Country'}
+                    options={countryOptions} value={formData.country}
+                    onChange={(val) => handleDropdownChange('country', val)}
+                    onBlur={handleBlur} disabled={isLoadingCountries} icon={Globe} error={errors.country} />
+                  <SearchableSelect id="state" label="State"
+                    placeholder={isLoadingStates ? 'Loading...' : 'Select State'}
+                    options={stateOptions} value={formData.state}
+                    onChange={(val) => handleDropdownChange('state', val)}
+                    onBlur={handleBlur} disabled={!formData.country || isLoadingStates} icon={MapPin} error={errors.state} />
+                  <SearchableSelect id="city" label="City"
+                    placeholder={isLoadingCities ? 'Loading...' : 'Select City'}
+                    options={cityOptions} value={formData.city}
+                    onChange={(val) => handleDropdownChange('city', val)}
+                    onBlur={handleBlur} disabled={!formData.state || isLoadingCities} icon={Building2} error={errors.city} />
+                </div>
+              </div>
+
+              {/* Submit */}
+              <Button type="submit" disabled={isLoading} fullWidth>
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
-            </div>
-          </form>
 
-          <p className="mt-4 text-center text-sm text-gray-600">
+            </form>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-slate-500">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 font-semibold hover:underline">Log in</Link>
+            <Link to="/login" className="text-sky-600 font-semibold hover:underline underline-offset-4">Sign in</Link>
           </p>
         </div>
       </div>

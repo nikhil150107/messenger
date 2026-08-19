@@ -3,15 +3,13 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem('token') || localStorage.getItem('accessToken') || '');
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '');
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
-      localStorage.setItem('accessToken', token);
     } else {
       localStorage.removeItem('token');
-      localStorage.removeItem('accessToken');
     }
   }, [token]);
 
