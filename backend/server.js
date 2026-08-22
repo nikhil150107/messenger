@@ -23,6 +23,7 @@ app.use(require('./middleware/privguard-middleware')({
 
 // Health check endpoint
 app.get('/health', (req, res) => res.json({ status: 'ok', app: 'messenger-backend', version: '1.0.0' }));
+app.get('/', (req, res) => res.json({ status: 'ok', app: 'messenger-backend', message: 'Messenger API is running' }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/dashboard', homeRouter);
